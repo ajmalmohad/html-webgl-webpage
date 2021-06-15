@@ -1,10 +1,13 @@
 //Uniforms
 uniform float uTime;
+uniform vec2 uHover;
+uniform float uHoverState;
 
 //Varyings
 varying float vNoise;
 varying vec2 vUv;
 varying vec3 vNormal;
+varying float vDist;
 
 vec4 permute(vec4 x){return mod(((x*34.)+1.)*x,289.);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}
@@ -81,11 +84,14 @@ float cnoise(vec3 P){
 void main(){
   vec3 newPos=position;
   float PI=3.1415;
-  float noise=cnoise(5.*vec3(position.x,position.y,position.z+uTime*0.1));
-  
-  // newPos += normal*noise*0.05;
+  float noise=cnoise(3.*vec3(position.x,position.y,position.z+uTime*0.1));
+  float dist = distance(uv,uHover);
+
+  newPos.z += 10.*sin(dist*10. + uTime)*uHoverState;
+
   //Set Varyings
-  vNoise=noise;
+  vNoise=0.1*sin(dist*5. -uTime)*uHoverState;
+  vDist=dist;
   vUv=uv;
   vNormal=normal;
   
