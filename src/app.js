@@ -6,6 +6,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Scroll from './js/scroll';
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl';
+import noise from './shaders/noise.glsl';
 import gsap from 'gsap';
 
 export default class World {
@@ -51,17 +52,16 @@ export default class World {
             this.setPositions();
             this.setEvents();
             this.resize();
-            this.addObjects();
             this.render();
         })
     }
     addImages() {
         this.material = new THREE.ShaderMaterial({
             uniforms: {
-                uTime: { value: 0},
-                uImage: {value:0},
-                uHover: {value: new THREE.Vector2(0.5,0.5)},
-                uHoverState: {value: 0},
+                uTime: { value: 0 },
+                uImage: { value: 0 },
+                uHover: { value: new THREE.Vector2(0.5, 0.5) },
+                uHoverState: { value: 0 },
             },
             vertexShader,
             fragmentShader,
@@ -79,16 +79,16 @@ export default class World {
             let material = this.material.clone();
             material.uniforms.uImage.value = texture;
 
-            img.addEventListener('mouseenter',()=>{
-                gsap.to(material.uniforms.uHoverState,{
-                    duration:1,
-                    value:1
+            img.addEventListener('mouseenter', () => {
+                gsap.to(material.uniforms.uHoverState, {
+                    duration: 1,
+                    value: 1
                 })
             })
-            img.addEventListener('mouseout',()=>{
-                gsap.to(material.uniforms.uHoverState,{
-                    duration:1,
-                    value:0
+            img.addEventListener('mouseout', () => {
+                gsap.to(material.uniforms.uHoverState, {
+                    duration: 1,
+                    value: 0
                 })
             })
 
@@ -112,16 +112,13 @@ export default class World {
             o.mesh.position.x = o.left - this.width / 2 + o.width / 2;
         })
     }
-    addObjects() {
-        console.log('Hi');
-    }
     render() {
         this.time = this.clock.getElapsedTime();
         this.scroll.render();
         this.setPositions();
-        this.allMaterials.forEach((material)=>{
+        this.allMaterials.forEach((material) => {
             material.uniforms.uTime.value = this.time;
-        })
+        });
 
         this.renderer.render(this.scene, this.camera);
         window.requestAnimationFrame(this.render.bind(this));
@@ -134,7 +131,7 @@ export default class World {
 
             this.raycaster.setFromCamera(this.mouse, this.camera);
             const intersects = this.raycaster.intersectObjects(this.scene.children);
-            for ( let i = 0; i < intersects.length; i ++ ) {
+            for (let i = 0; i < intersects.length; i++) {
                 let obj = intersects[0].object;
                 obj.material.uniforms.uHover.value = intersects[0].uv;
             }
